@@ -1,13 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SmartGlass.Messaging.Session.Messages;
 using SmartGlass.Common;
-using SmartGlass.Messaging.Session;
 using SmartGlass.Channels.Broadcast;
 using SmartGlass.Channels.Broadcast.Messages;
-using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using SmartGlass.Json;
 
 namespace SmartGlass.Channels
 {
@@ -76,8 +74,7 @@ namespace SmartGlass.Channels
         internal BroadcastChannel(ChannelMessageTransport transport)
         {
             _baseTransport = transport;
-            _transport = new JsonMessageTransport<BroadcastBaseMessage>(
-                _baseTransport, ChannelJsonSerializerSettings.GetBroadcastSettings());
+            _transport = new JsonMessageTransport<BroadcastBaseMessage>(_baseTransport, GetBroadcastOptions());
             _transport.MessageReceived += OnMessageReceived;
         }
 
@@ -110,12 +107,11 @@ namespace SmartGlass.Channels
             if (e.Message is GamestreamEnabledMessage enabledMessage)
             {
                 _enabledMessage = enabledMessage;
-
             }
 
             logger.LogTrace("Received BroadcastMsg:\r\n{0}\r\n{1}",
                 e.Message.ToString(),
-                JsonConvert.SerializeObject(e.Message, Formatting.Indented));
+                JsonSerializer.Serialize(e.Message, GetBroadcastOptions(true)));
         }
 
         /// <summary>
@@ -174,6 +170,17 @@ namespace SmartGlass.Channels
         public void Dispose()
         {
             Dispose(true);
+        }
+
+        public static JsonSerializerOptions GetBroadcastOptions(bool intended = false)
+        {
+            var serializerOptions = new JsonSerializerOptions() { WriteIndented = intended, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            serializerOptions.Converters.Add(new BroadcastMessageJsonConverter());
+            serializerOptions.Converters.Add(new IntConverter());
+            serializerOptions.Converters.Add(new FloatConverter());
+            serializerOptions.Converters.Add(new BooleanConverter());
+            serializerOptions.Converters.Add(new GuidConverter());
+            return serializerOptions;
         }
     }
 }
