@@ -42,16 +42,16 @@ namespace SmartGlass.Common
                 await Task.Run(async () => await postAddAction());
             }
 
-            Task.Delay(timeout, timeoutCancellation.Token).ContinueWith(t =>
-            {
-                if (timeoutCancellation.IsCancellationRequested)
-                {
-                    return;
-                }
+            _ = Task.Delay(timeout, timeoutCancellation.Token).ContinueWith(t =>
+              {
+                  if (timeoutCancellation.IsCancellationRequested)
+                  {
+                      return;
+                  }
 
-                tcs.TrySetException(new TimeoutException());
-                remove(obj, handler);
-            });
+                  tcs.TrySetException(new TimeoutException());
+                  remove(obj, handler);
+              });
 
             return await tcs.Task;
         }

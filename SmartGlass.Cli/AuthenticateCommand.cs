@@ -34,12 +34,8 @@ namespace SmartGlass.Cli
 
                 AuthenticationService authService = new AuthenticationService(response);
 
-                authService.Authenticate();
-
-                using (FileStream fs = File.Open(TokenFilePath, FileMode.Create))
-                {
-                    authService.DumpToFile(fs);
-                }
+                await authService.AuthenticateAsync();
+                await authService.DumpToJsonFileAsync(TokenFilePath);
             }
             catch (Exception e)
             {
