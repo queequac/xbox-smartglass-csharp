@@ -9,21 +9,23 @@ namespace SmartGlass.Channels.Broadcast
     {
         public override BroadcastBaseMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            var messageType = (BroadcastMessageType)document.RootElement.GetProperty("type").GetInt32();
-
-            switch (messageType)
+            using (JsonDocument document = JsonDocument.ParseValue(ref reader))
             {
-                case BroadcastMessageType.GamestreamState:
-                    var stateMessageType = (GamestreamStateMessageType)document.RootElement.GetProperty("state").GetInt32();
-                    typeToConvert = GamestreamStateMessageTypeAttribute.GetTypeForMessageType(stateMessageType) ?? typeof(GamestreamStateBaseMessage);
-                    break;
-                default:
-                    typeToConvert = BroadcastMessageTypeAttribute.GetTypeForMessageType(messageType) ?? typeof(BroadcastBaseMessage);
-                    break;
-            }
+                var messageType = (BroadcastMessageType)document.RootElement.GetProperty("type").GetInt32();
 
-            return (BroadcastBaseMessage)JsonSerializer.Deserialize(ref reader, typeToConvert, options);
+                switch (messageType)
+                {
+                    case BroadcastMessageType.GamestreamState:
+                        var stateMessageType = (GamestreamStateMessageType)document.RootElement.GetProperty("state").GetInt32();
+                        typeToConvert = GamestreamStateMessageTypeAttribute.GetTypeForMessageType(stateMessageType) ?? typeof(GamestreamStateBaseMessage);
+                        break;
+                    default:
+                        typeToConvert = BroadcastMessageTypeAttribute.GetTypeForMessageType(messageType) ?? typeof(BroadcastBaseMessage);
+                        break;
+                }
+
+                return (BroadcastBaseMessage)JsonSerializer.Deserialize(ref reader, typeToConvert, options);
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, BroadcastBaseMessage value, JsonSerializerOptions options)
