@@ -25,7 +25,6 @@ namespace SmartGlass.Json
         public override void Write(Utf8JsonWriter writer, Guid value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value == Guid.Empty ? "" : value.ToString());
-
         }
     }
 }

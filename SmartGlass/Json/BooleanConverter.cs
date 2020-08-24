@@ -26,7 +26,6 @@ namespace SmartGlass.Json
         public override void Write(Utf8JsonWriter writer, bool longValue, JsonSerializerOptions options)
         {
             writer.WriteStringValue(longValue.ToString());
-
         }
     }
 

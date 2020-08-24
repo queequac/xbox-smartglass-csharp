@@ -22,9 +22,10 @@ namespace SmartGlass.Channels.Broadcast
                     default:
                         typeToConvert = BroadcastMessageTypeAttribute.GetTypeForMessageType(messageType) ?? typeof(BroadcastBaseMessage);
                         break;
+
                 }
 
-                return (BroadcastBaseMessage)JsonSerializer.Deserialize(ref reader, typeToConvert, options);
+                return (BroadcastBaseMessage)JsonSerializer.Deserialize(document.RootElement.GetRawText(), typeToConvert, options);
             }
         }
 

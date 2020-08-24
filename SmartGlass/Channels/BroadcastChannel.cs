@@ -111,7 +111,7 @@ namespace SmartGlass.Channels
 
             logger.LogTrace("Received BroadcastMsg:\r\n{0}\r\n{1}",
                 e.Message.ToString(),
-                JsonSerializer.Serialize(e.Message, GetBroadcastOptions(true)));
+                JsonSerializer.Serialize(e.Message, new JsonSerializerOptions() { WriteIndented = true }));
         }
 
         /// <summary>
