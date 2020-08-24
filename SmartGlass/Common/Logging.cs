@@ -1,5 +1,3 @@
-
-
 using Microsoft.Extensions.Logging;
 
 namespace SmartGlass.Common
@@ -10,6 +8,6 @@ namespace SmartGlass.Common
     public class Logging
     {
         public static ILoggerFactory Factory { get; private set; } =
-            LoggerFactory.Create(builder => builder.AddDebug());
+            LoggerFactory.Create(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Trace));
     }
 }
